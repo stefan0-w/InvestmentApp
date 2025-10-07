@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import Asset, Transaction
 
 class UserSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
@@ -28,3 +29,35 @@ class UserSerializer(serializers.ModelSerializer):
         instance.password = validated_data.get('password', instance.password)
         instance.save()
         return instance
+    
+
+class AssetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Asset
+        fields = "__all__"
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    asset = serializers.CharField()  # przyjmujemy symbol z frontend
+
+    class Meta:
+        model = Transaction
+        fields = ['id', 'asset', 'quantity', 'price', 'type', 'date']
+        read_only_fields = ['id', 'date']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        symbol = validated_data.pop('asset').upper()
+
+        # sprawdzamy czy Asset istnieje
+        asset, created = Asset.objects.get_or_create(
+            symbol=symbol,
+            defaults={'description': symbol}  # opcjonalnie później możesz dodać pełną nazwę z Finnhub
+        )
+
+        transaction = Transaction.objects.create(
+            user=user,
+            asset=asset,
+            **validated_data
+        )
+        return transaction
