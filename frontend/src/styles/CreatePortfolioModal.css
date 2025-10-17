@@ -1,0 +1,35 @@
+.modalOverlay{
+  width: 100vw;
+  height: 100vh;
+  top:0;
+  left:0;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContainer{
+  position: absolute;
+  background-color: white;
+  border-radius: 6px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+}
+
+.modalCloseBtn{
+  display: flex;
+  justify-content: flex-end;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.modalForm{
+  display: flex;
+  flex-direction: column;
+}
