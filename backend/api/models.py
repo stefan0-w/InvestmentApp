@@ -3,11 +3,29 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Asset(models.Model):
-  symbol = models.CharField(max_length=20, unique=True)
-  description = models.CharField(max_length=100)
+
+  ASSET_TYPES = [
+        ('STOCK', 'Stock'),
+        ('CRYPTO', 'Cryptocurrency'),
+        ('ETF', 'ETF'),
+    ]
+
+  symbol = models.CharField(max_length=10, unique=True)
+  name = models.CharField(max_length=100)
+  type = models.CharField(max_length=10, choices=ASSET_TYPES, default='STOCK')
 
   def __str__(self):
-    return f"{self.symbol} : {self.description}"
+    return self.name
+
+
+class Portfolio(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='portfolio')
+    name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.user.username})"
+
 
 class Transaction(models.Model):
   TRANSACTION_TYPE = [
@@ -15,12 +33,15 @@ class Transaction(models.Model):
         ('SELL', 'Sell'),
     ]
   
-  user = models.ForeignKey(User, on_delete=models.CASCADE)
-  asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
-  quantity = models.DecimalField(max_digits=10, decimal_places=2)
-  price = models.DecimalField(max_digits=10, decimal_places=2)
-  type = models.CharField(max_length=4, choices=TRANSACTION_TYPE)
-  date = models.DateTimeField(auto_now_add=True)
+  portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name='transactions')
+  asset = models.ForeignKey(Asset, on_delete=models.PROTECT)
+  quantity = models.DecimalField(max_digits=18, decimal_places=8)
+  price = models.DecimalField(max_digits=18, decimal_places=8)
+  transaction_type = models.CharField(max_length=4, choices=TRANSACTION_TYPE)
+  transaction_date = models.DateTimeField(auto_now_add=True)
 
-  def __str__(self):
-    return f"{self.user} {self.type} {self.asset.symbol} {self.quantity} {self.price} {self.date}"
+  def __str__(self): 
+    return f"{self.portfolio.user.username} - {self.transaction_type} {self.asset.symbol}"
+
+
+

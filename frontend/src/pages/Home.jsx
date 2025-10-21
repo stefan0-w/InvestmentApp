@@ -1,38 +1,64 @@
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import TransactionForm from "../components/TransactionForm";
 import api from "../api";
+import CreatePortfolioModal from "../components/CreatePortfolioModal";
+import {Link} from 'react-router-dom'
 
 function Home() {
-const [symbol, setSymbol] = useState("");
-const [price, setPrice] = useState(0);
+  const [portfolios, setPortfolios] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const getPortfolios = useCallback(async () => {
+    // Ustawiamy ładowanie na true przy każdym odświeżeniu
+    setLoading(true); 
+    try {
+      const res = await api.get('api/portfolios/');
+      setPortfolios(res.data);
+    } catch (err) {
+      console.log("błąd podczas pobierania portfeli", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []); // Pusta tablica oznacza, że funkcja jest tworzona tylko raz
 
-  try{
-    const res = await api.get(`api/quote/?symbol=${symbol}`)
+  // KROK 2: Użyj tej funkcji wewnątrz useEffect
+  useEffect(() => {
+    getPortfolios(); // Wywołaj przy pierwszym renderowaniu
+  }, [getPortfolios]); // Dodaj getPortfolios do tablicy zależności
 
-    setPrice(res.data);
+  const handlePortfolioCreated = () => {
+    // KROK 3: Teraz możesz jej użyć również tutaj!
+    getPortfolios(); 
+  };
 
-  }
-  catch(error)
+  if(loading)
   {
-    console.error(error)
+    return <div>Loading portfolios...</div>;
   }
-}
+
+
 
   return (
     <div>
-      <h1>Home</h1>
-      <TransactionForm />
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Enter symbol"
-        value={symbol}
-        onChange={(e) => setSymbol(e.target.value)}
-        ></input>
-        <button type="submit">Quote</button>
-      </form>
-      <p value={price}>{price} $</p>
+      <h1>Your portfolios</h1>
+      {portfolios.length > 0 ? (
+        <ul>
+          {portfolios.map((p) => (
+            <li key={p.id}>
+              <Link to={`/portfolio/${p.id}`}>{p.name}</Link>
+              <small> Created on: {new Date(p.created_at).toLocaleDateString()}</small>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>You don't have any portfolios yet. Create one!</p>
+      )}
+      <button onClick={() => setIsModalOpen(true)}>Create new portfolio</button>
+      <CreatePortfolioModal isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onPortfolioCreated={handlePortfolioCreated}>
+      </CreatePortfolioModal>
     </div>
   );
 }

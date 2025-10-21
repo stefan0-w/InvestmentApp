@@ -15,8 +15,8 @@ function TransactionForm() {
 
     const fetchPrice = async () => {
       try {
-        const res = await api.get(`/api/quote/?symbol=${asset}`);
-        setPrice(parseFloat(res.data).toFixed(2));
+        const res = await api.get(`/api/assets/quote/?symbol=${asset}`);
+        setPrice(parseFloat(res.data.price).toFixed(2));
       } catch (err) {
         console.error("Błąd pobierania ceny:", err);
       }
@@ -36,11 +36,11 @@ function TransactionForm() {
     setLoading(true);
     try {
       const res = await api.post("/api/transactions/", {
-        asset,      // symbol aktywa
+        asset_data: asset,      // symbol aktywa
         quantity,
         price,
-        type,
-        date
+        transaction_type: type,
+        transaction_date : date
       });
       alert("Transakcja dodana!");
       // czyścimy formularz
