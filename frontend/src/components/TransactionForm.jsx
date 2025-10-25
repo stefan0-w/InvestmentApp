@@ -1,29 +1,31 @@
 import { useEffect, useState } from "react";
 import api from "../api";
 import AssetSearchInput from "./AssetSearchInput";
+import '../styles/TransactionForm.css'
 
-function TransactionForm() {
-  const [asset, setAsset] = useState("");
+function TransactionForm({onSuccess}) {
+  const [asset, setAsset] = useState(null);
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [type, setType] = useState("BUY"); // domyślnie BUY
   const [loading, setLoading] = useState(false);
 
+
   // pobieranie ceny po zmianie asset
-  useEffect(() => {
-    if (!asset) return;
+  // useEffect(() => {
+  //   if (!asset) return;
 
-    const fetchPrice = async () => {
-      try {
-        const res = await api.get(`/api/assets/quote/?symbol=${asset}`);
-        setPrice(parseFloat(res.data.price).toFixed(2));
-      } catch (err) {
-        console.error("Błąd pobierania ceny:", err);
-      }
-    };
+  //   const fetchPrice = async () => {
+  //     try {
+  //       const res = await api.get(`/api/assets/quote/?symbol=${asset}`);
+  //       setPrice(parseFloat(res.data.price).toFixed(2));
+  //     } catch (err) {
+  //       console.error("Błąd pobierania ceny:", err);
+  //     }
+  //   };
 
-    fetchPrice();
-  }, [asset]); // <-- uruchamia się tylko gdy zmieni się asset
+  //   fetchPrice();
+  // }, [asset]); // <-- uruchamia się tylko gdy zmieni się asset
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,13 +38,21 @@ function TransactionForm() {
     setLoading(true);
     try {
       const res = await api.post("/api/transactions/", {
-        asset_data: asset,      // symbol aktywa
+        asset_data: {
+          "symbol" : asset.symbol,
+          "name" : asset.description,
+          "type" : asset.type
+        }, 
         quantity,
         price,
         transaction_type: type,
         transaction_date : date
       });
       alert("Transakcja dodana!");
+
+      if (onSuccess) {
+        onSuccess();
+      }
       // czyścimy formularz
       setAsset("");
       setQuantity("");
@@ -57,13 +67,11 @@ function TransactionForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Add new transaction</h2>
+    <form onSubmit={handleSubmit} className="formContainer">
 
       <label>Asset</label>
       <AssetSearchInput onSelect={setAsset} />
-      {asset && <p>Wybrane: {asset}</p>}
-
+      {asset && <p>Wybrane: {asset.symbol}</p>}
       <label>Quantity</label>
       <input
         type="number"
@@ -77,7 +85,7 @@ function TransactionForm() {
         type="number"
         step="0.01"
         value={price}
-        readOnly // użytkownik nie może zmienić
+        onChange={(e) => setPrice(e.target.value)}
       />
 
       <label>Type</label>
@@ -86,7 +94,7 @@ function TransactionForm() {
         <option value="SELL">SELL</option>
       </select>
 
-      <button type="submit" disabled={loading}>
+      <button type="submit" disabled={loading} className="submitFormBtn">
         {loading ? "Dodawanie..." : "Dodaj transakcję"}
       </button>
     </form>

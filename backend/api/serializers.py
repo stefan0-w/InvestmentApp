@@ -1,20 +1,26 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Asset, Transaction, Portfolio
+from rest_framework.validators import UniqueValidator
 
 # --- Serializery Użytkownika i Aktywów (z drobnymi poprawkami) ---
 
 class UserSerializer(serializers.ModelSerializer):
-    """
-    Ulepszony UserSerializer bez walidacji hasła (to rola frontendu)
-    i z bezpiecznym tworzeniem użytkownika.
-    """
+
+    email = serializers.EmailField(
+        required=True,
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="Account with this email already exists"
+            )
+        ]
+    )
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['id', 'email', 'first_name', 'last_name', 'password']
         extra_kwargs = {
-            'password': {'write_only': True},
-            'username': {'read_only': True}
+            'password': {'write_only': True}
         }
 
     def create(self, validated_data):
@@ -37,7 +43,7 @@ class AssetInputSerializer(serializers.Serializer):
     """Ten serializer również pozostaje bez zmian. Służy do przyjmowania danych o nowym aktywie."""
     symbol = serializers.CharField(max_length=10)
     name = serializers.CharField(max_length=100)
-    type = serializers.CharField(max_length=10)
+    type = serializers.CharField(max_length=20)
 
 
 # --- GŁÓWNE ZMIANY TUTAJ ---
@@ -63,11 +69,26 @@ class TransactionSerializer(serializers.ModelSerializer):
         asset_data = validated_data.pop('asset_data')
         symbol = asset_data.get('symbol').upper()
 
+        type_from_finnhub = asset_data.get('type')
+
+        # 2. Zdefiniuj mapowanie
+        #    Klucz = Co wysyła Finnhub, Wartość = Co jest w Twoim modelu
+        TYPE_MAPPING = {
+            'Common Stock': 'STOCK',
+            'ETF': 'ETF',
+            'Cryptocurrency': 'CRYPTO',
+            # Możesz dodać więcej typów z Finnhub w przyszłości
+            'ADR': 'STOCK', 
+            'Preferred Stock': 'STOCK',
+        }
+
+        mapped_type = TYPE_MAPPING.get(type_from_finnhub, 'STOCK')
+
         asset, created = Asset.objects.get_or_create(
             symbol=symbol,
             defaults={
                 'name': asset_data.get('name'),
-                'type': asset_data.get('type')
+                'type': mapped_type  # <--- Użyj nowej, zmapowanej zmiennej
             }
         )
         # Tworzymy transakcję bez informacji o portfelu.
@@ -76,15 +97,10 @@ class TransactionSerializer(serializers.ModelSerializer):
         return transaction
 
 
+from .services.portfolio_services import calculate_portfolio_details
+
 class PortfolioSerializer(serializers.ModelSerializer):
-    """
-    JEDYNY serializer dla portfela. Pokazuje wszystko: dane, podsumowanie i transakcje.
-    Zastępuje `PortfolioDetailSerializer`.
-    """
-    # Zagnieżdżamy TransactionSerializer, aby pokazać wszystkie transakcje w portfelu
     transactions = TransactionSerializer(many=True, read_only=True)
-    
-    # Pola obliczane (tak jak wcześniej)
     total_value = serializers.SerializerMethodField()
     assets_summary = serializers.SerializerMethodField()
 
@@ -92,11 +108,21 @@ class PortfolioSerializer(serializers.ModelSerializer):
         model = Portfolio
         fields = ['id', 'name', 'total_value', 'assets_summary', 'transactions']
     
+    def get_portfolio_details(self, portfolio_instance):
+        """
+        Pomocnicza metoda, aby obliczyć dane tylko raz i przechować je w kontekście.
+        """
+        if not hasattr(self, '_details_cache'):
+            # Wywołaj serwis TYLKO RAZ
+            self._details_cache = calculate_portfolio_details(portfolio_instance)
+        return self._details_cache
+
     def get_total_value(self, portfolio_instance):
-        # Tutaj w przyszłości będzie logika z serwisu
-        # na razie możemy zwrócić prostą wartość
-        return 0.00 
+        """Pobiera całkowitą wartość z obliczonych danych."""
+        details = self.get_portfolio_details(portfolio_instance)
+        return details.get('total_value')
 
     def get_assets_summary(self, portfolio_instance):
-        # Tutaj w przyszłości będzie logika z serwisu
-        return []
+        """Pobiera podsumowanie aktywów z obliczonych danych."""
+        details = self.get_portfolio_details(portfolio_instance)
+        return details.get('assets_summary')

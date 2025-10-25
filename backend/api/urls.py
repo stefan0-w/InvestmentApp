@@ -1,13 +1,27 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import TransactionViewSet, search_assets, quote_symbol
-
+from .views import (
+    CreateUserView,
+    PortfolioDetailView, 
+    TransactionViewSet,
+    SearchAssetsView,
+    QuoteSymbolView
+)
 router = DefaultRouter()
 router.register(r'transactions', TransactionViewSet, basename='transaction')
 
 urlpatterns = [
-    path("quote/", quote_symbol, name ="quote_symbol"),
-    path("assets/search/", search_assets, name="search-assets"),
+    # Endpoint do rejestracji użytkownika
+    path('user/register/', CreateUserView.as_view(), name='register'),
+
+    # Endpoint do pobierania JEDYNEGO portfela zalogowanego użytkownika
+    path('portfolio/', PortfolioDetailView.as_view(), name='portfolio-detail'),
+
+    # Endpointy do komunikacji z zewnętrznym API
+    path('assets/search/', SearchAssetsView.as_view(), name='search-assets'),
+    path('assets/quote/', QuoteSymbolView.as_view(), name='quote-symbol'),
+
+    # Dołączamy URL-e wygenerowane przez router (dla /transactions/)
     path('', include(router.urls)),
 ]
 

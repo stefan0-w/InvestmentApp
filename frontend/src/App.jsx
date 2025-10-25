@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+import PortfolioPage from "./pages/PortfolioPage"
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout"; // <-- IMPORTUJEMY LAYOUT
@@ -45,7 +46,7 @@ function App() {
                     {/* Trasy zagnieżdżone - będą renderowane w <Outlet /> w Layout.js */}
                     <Route index element={<Home />} />
                     {/* Poniżej możesz dodać kolejne podstrony, które będą miały nawigację */}
-                    {/* np. <Route path="portfolio" element={<PortfolioPage />} /> */}
+                    <Route path="portfolio" element={<PortfolioPage />} />
                     {/* np. <Route path="ustawienia" element={<SettingsPage />} /> */}
                 </Route>
 

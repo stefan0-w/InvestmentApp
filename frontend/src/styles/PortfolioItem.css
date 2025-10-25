@@ -1,0 +1,30 @@
+/* --- Styl całego wiersza --- */
+.portfolioRow td {
+  padding: 15px;
+  border-bottom: 1px solid #eee; /* Cienka linia oddzielająca wiersze */
+  vertical-align: middle; /* Wyrównanie w pionie do środka */
+}
+
+/* Efekt po najechaniu myszką */
+.portfolioRow:hover {
+  background-color: #f9f9f9;
+}
+
+/* --- Style dla konkretnych danych WEWNĄTRZ komórek --- */
+
+.assetSymbol {
+  font-weight: 700; /* Pogrubiony symbol */
+  font-size: 1.1em;
+  color: #000;
+}
+
+.assetName {
+  font-size: 0.9em;
+  color: #555; /* Szary, mniejszy tekst dla pełnej nazwy */
+  display: block; /* Powoduje, że nazwa jest pod symbolem */
+}
+
+/* Styl dla liczb (np. wyrównanie do prawej) */
+.numericData {
+  font-family: 'Courier New', Courier, monospace; /* Dla wyglądu "finansowego" */
+}

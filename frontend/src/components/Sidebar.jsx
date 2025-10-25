@@ -7,17 +7,17 @@ const Sidebar = () => {
     return (
         <nav className="sidebar">
             <div className="sidebar-header">
-                <h2>Twoja Aplikacja</h2>
+                <h2>InvestmentApp</h2>
             </div>
             <ul className="nav-links">
                 <li>
                     <Link to="/">Dashboard</Link>
                 </li>
                 <li>
-                    <Link to="/portfolio">Moje Portfele</Link> {/* Przykład nowej podstrony */}
+                    <Link to="/portfolio">Portfolio</Link>
                 </li>
                 <li>
-                    <Link to="/ustawienia">Ustawienia</Link> {/* Przykład nowej podstrony */}
+                    <Link to="/ustawienia">Others</Link>
                 </li>
             </ul>
         </nav>

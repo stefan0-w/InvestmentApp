@@ -1,0 +1,15 @@
+/* --- Ogólny styl tabeli --- */
+.portfolioTable {
+  width: 100%;
+  border-collapse: collapse; /* Łączy ramki, wygląda czyściej */
+  margin-top: 20px;
+}
+
+/* --- Nagłówki (elementy, które się nie powtarzają) --- */
+.portfolioTable th {
+  background-color: #f8f8f8; /* Jasnoszare tło dla nagłówków */
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+}

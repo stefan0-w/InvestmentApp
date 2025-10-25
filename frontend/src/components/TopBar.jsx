@@ -11,7 +11,7 @@ const TopBar = () => {
                 <h1>Dashboard</h1>
             </div>
             <div className="topbar-actions">
-                <Link to="/logout" className="logout-button">Wyloguj</Link>
+                <Link to="/logout" className="logout-button">Logout</Link>
             </div>
         </header>
     );
