@@ -68,10 +68,6 @@ class TransactionViewSet(viewsets.ModelViewSet):
 # --- WIDOKI DO KOMUNIKACJI Z ZEWNĘTRZNYM API ---
 
 class SearchAssetsView(APIView):
-    """
-    Widok do wyszukiwania aktywów w zewnętrznym API (bez zmian w logice).
-    Używa warstwy serwisowej dla czystości kodu.
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -84,9 +80,6 @@ class SearchAssetsView(APIView):
 
 
 class QuoteSymbolView(APIView):
-    """
-    Widok do pobierania aktualnej ceny z zewnętrznego API (bez zmian w logice).
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
