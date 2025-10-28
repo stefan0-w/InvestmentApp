@@ -10,15 +10,15 @@ function TransactionForm({onSuccess}) {
   const [type, setType] = useState("BUY"); // domyślnie BUY
   const [loading, setLoading] = useState(false);
 
-
+  //#####ZOSTAWIŁEM TO, NA WYPADEK GDYBYM SIĘ ZDECYDOWAŁ NA TO ŻE USER CHCĘ KUPIĆ PO AKUTALNEJ CENIE A NIE WPISYWAĆ SAMEMU
   // pobieranie ceny po zmianie asset
   // useEffect(() => {
   //   if (!asset) return;
 
   //   const fetchPrice = async () => {
   //     try {
-  //       const res = await api.get(`/api/assets/quote/?symbol=${asset}`);
-  //       setPrice(parseFloat(res.data.price).toFixed(2));
+  //       const res = await api.get(`/api/assets/quote/?symbol=${asset.symbol}`);
+  //       setPrice(parseFloat(res.data.c).toFixed(2));
   //     } catch (err) {
   //       console.error("Błąd pobierania ceny:", err);
   //     }
@@ -68,6 +68,7 @@ function TransactionForm({onSuccess}) {
 
   return (
     <form onSubmit={handleSubmit} className="formContainer">
+      <label>Transaction Type: {type}</label>
 
       <label>Asset</label>
       <AssetSearchInput onSelect={setAsset} />
@@ -88,11 +89,10 @@ function TransactionForm({onSuccess}) {
         onChange={(e) => setPrice(e.target.value)}
       />
 
-      <label>Type</label>
-      <select value={type} onChange={(e) => setType(e.target.value)}>
+      {/* <select value={type} onChange={(e) => setType(e.target.value)}>
         <option value="BUY">BUY</option>
         <option value="SELL">SELL</option>
-      </select>
+      </select> */}
 
       <button type="submit" disabled={loading} className="submitFormBtn">
         {loading ? "Dodawanie..." : "Dodaj transakcję"}
