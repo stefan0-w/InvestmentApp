@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import api from "../api";
+import React from "react";
 import "../styles/TransactionModal.css";
 import TransactionForm from "./TransactionForm";
 import ReactDOM from 'react-dom';
@@ -15,7 +14,7 @@ function TransactionModal({isOpen, onClose, onSuccess}) {
     <div className="modalOverlay">
       <div className="modalContainer">
         <button className="modalCloseBtn" onClick={onClose}> X </button>
-        <TransactionForm onSuccess={onSuccess} className="modalForm"></TransactionForm>
+        <TransactionForm onSuccess={onSuccess}></TransactionForm>
       </div>
     </div>,
     document.getElementById('modal-root')

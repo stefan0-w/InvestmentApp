@@ -59,7 +59,7 @@ function Form({ route, method }) {
 
   return (
     <form onSubmit={handleSubmit} className="form-container">
-      <h1>{name}</h1>
+      <h2>Investment Tracker</h2>
 
       {method === "login" ? (
         <>

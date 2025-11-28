@@ -5,9 +5,11 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import PortfolioPage from "./pages/PortfolioPage"
+import Others from "./pages/Others";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout"; // <-- IMPORTUJEMY LAYOUT
+import TransactionHistory from "./pages/TransactionHistory";
 
 import "../src/styles/Form.css";
 // Zaimportuj też nowe pliki CSS
@@ -47,6 +49,8 @@ function App() {
                     <Route index element={<Home />} />
                     {/* Poniżej możesz dodać kolejne podstrony, które będą miały nawigację */}
                     <Route path="portfolio" element={<PortfolioPage />} />
+                    <Route path="others" element={<Others />} />
+                    <Route path="history" element={<TransactionHistory />} />
                     {/* np. <Route path="ustawienia" element={<SettingsPage />} /> */}
                 </Route>
 

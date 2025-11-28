@@ -17,9 +17,14 @@ function PortfolioItem({asset, onDataRefresh}) {
         <td className="assetType">{asset.type}</td>
         <td className="numericData">{asset.quantity}</td>
         <td className="numericData">${asset.current_value.toFixed(2)}</td>
-        <td>{asset.unrealized_gain}</td>
+        <td className={`numericData ${
+          asset.unrealized_gain > 0 ? 'gain-positive' : 
+          (asset.unrealized_gain < 0 ? 'gain-negative' : '')
+          }`}>
+          ${asset.unrealized_gain.toFixed(2)}
+        </td>
         <td>
-          <button onClick={() => setIsSellModalOpen(true)}>
+          <button onClick={() => setIsSellModalOpen(true)} className='transaction-button'>
           Sell
         </button>
         <SellModal 

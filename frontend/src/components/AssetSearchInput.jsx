@@ -51,12 +51,12 @@ function AssetSearchInput({ onSelect }) {
 
       try {
         setLoading(true);
-        const res = await api.get(`/api/assets/search/?q=${query}&exchange=US`);
+        const res = await api.get(`/api/assets/search/?q=${query}`);
         const searchResults = (res.data && Array.isArray(res.data.result)) 
                               ? res.data.result 
                               : [];
         setResults(searchResults);
-        setCache((prev) => ({ ...prev, [query]: res.data }));
+        setCache((prev) => ({ ...prev, [query]: searchResults }));
       } catch (err) {
         console.error("Błąd pobierania aktywów:", err);
       } finally {
@@ -83,7 +83,7 @@ function AssetSearchInput({ onSelect }) {
       <input
         type="text"
         value={query}
-        placeholder="Szukaj aktywa..."
+        placeholder="Search an asset..."
         onChange={(e) => setQuery(e.target.value)}
         style={inputStyle}
       />

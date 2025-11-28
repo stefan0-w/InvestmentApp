@@ -8,7 +8,7 @@ const TopBar = () => {
     return (
         <header className="topbar">
             <div className="topbar-title">
-                <h1>Dashboard</h1>
+                {/* <h1>Dashboard</h1> */}
             </div>
             <div className="topbar-actions">
                 <Link to="/logout" className="logout-button">Logout</Link>

@@ -1,6 +1,4 @@
-import React, { useState } from "react";
 import ReactDOM from 'react-dom'
-import api from "../api";
 import "../styles/TransactionModal.css";
 import SellForm from "./SellForm";
 
@@ -16,10 +14,9 @@ function SellModal({isOpen, onClose, onSuccess, assetToSell}) {
       <div className="modalContainer">
         <button className="modalCloseBtn" onClick={onClose}> X </button>
         <SellForm 
-        onSuccess={onSuccess}
-        assetToSell={assetToSell} 
-        className="modalForm">
-        </SellForm>
+          onSuccess={onSuccess}
+          assetToSell={assetToSell} 
+        />
       </div>
     </div>,
     document.getElementById('modal-root')
