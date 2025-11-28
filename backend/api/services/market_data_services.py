@@ -1,5 +1,6 @@
 from django.conf import settings
 import requests
+from django.core.cache import cache
 
 api_key = settings.FINNHUB_API_KEY 
 
@@ -42,9 +43,15 @@ def search_finnhub_assets(query: str):
         return {"error": "An unexpected server error occurred."}
 
 def get_finnhub_quote(symbol: str):
-    """
-    Pobiera aktualną cenę dla danego symbolu
-    """
+    
+    cache_key = f"finnhub_price_{symbol}"
+    
+    # 2. Spróbuj pobrać dane z cache'u
+    cached_data = cache.get(cache_key)
+    
+    if cached_data:
+        # Znaleziono w cache! Zwróć dane bez pytania API.
+        return cached_data
 
     if not api_key:
         print("BŁĄD KRYTYCZNY: Brak klucza FINNHUB_API_KEY w zmiennych środowiskowych.")
@@ -62,7 +69,16 @@ def get_finnhub_quote(symbol: str):
 
         response.raise_for_status() 
 
-        return response.json()
+        data = response.json()
+        
+        if data and data.get('c') != 0:
+            # 4. Zapisz udaną odpowiedź w cache'u na 60 sekund
+            cache.set(cache_key, data, timeout=60) 
+            return data
+        else:
+            # API zwróciło złe dane (np. c=0), zwróć je, ale NIE zapisuj w cache
+            print(f"Otrzymano puste dane z Finnhub dla {symbol}, nie cache'uję.")
+            return data
     
     except requests.exceptions.HTTPError as http_err:
         print(f"Błąd HTTP: {http_err}")
