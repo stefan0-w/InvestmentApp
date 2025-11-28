@@ -1,0 +1,93 @@
+/* Plik: PortfolioSummary.css */
+
+/* Główna siatka - domyślnie 1 kolumna (mobilnie), 
+  2 kolumny na tabletach i 4 na desktopie 
+*/
+.summary-grid {
+  display: grid;
+  gap: 1rem; /* 16px */
+  grid-template-columns: 1fr; /* Domyślnie 1 kolumna */
+}
+
+/* Media query dla tabletów (medium) */
+@media (min-width: 768px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 kolumny */
+  }
+}
+
+/* Media query dla desktopów (large) */
+@media (min-width: 1024px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 kolumny */
+  }
+}
+
+/* Stylizacja pojedynczej karty */
+.summary-card {
+  background-color: white;
+  border-radius: 0.5rem; /* 8px */
+  border: 1px solid #e5e7eb; /* Jasnoszary border */
+  padding: 1.25rem; /* 20px */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Nagłówek karty (tytuł + ikona) */
+.card-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem; /* 12px */
+}
+
+.card-title {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  color: #6b7280; /* Szary tekst */
+  margin: 0; /* Usuwa domyślny margines h3 */
+}
+
+/* Wrapper dla ikony w nagłówku */
+.card-header .icon-wrapper {
+  color: #6b7280; /* Szara ikona */
+}
+.card-header .icon-wrapper svg {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+}
+
+/* Treść karty (wartość + zmiana) */
+.card-content {
+  /* Możesz dodać style tutaj, jeśli potrzeba */
+}
+
+.card-value {
+  font-size: 1.875rem; /* 30px */
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.25rem; /* 4px */
+}
+
+/* Kontener na zmianę (np. +$4,231.50) */
+.card-change {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* 4px */
+  font-size: 0.875rem; /* 14px */
+}
+
+/* Style dla ikon strzałek (lucide-react) */
+.card-change svg {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+}
+
+/* Klasy dla kolorów */
+.text-positive {
+  color: #16a34a; /* Zielony (jak w Tailwind green-600) */
+}
+
+.text-negative {
+  color: #dc2626; /* Czerwony (jak w Tailwind red-600) */
+}

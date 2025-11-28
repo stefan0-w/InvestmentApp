@@ -1,0 +1,146 @@
+/* Import czcionki dla spójnego wyglądu */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+/* Główny kontener formularza */
+.portfolio-form-container {
+    font-family: 'Lato', sans-serif;
+    background-color: #3a4753; /* Ciemne tło jak na obrazku */
+    color: #e0e0e0;
+    padding: 24px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px; /* Ograniczenie szerokości dla estetyki */
+    margin: 20px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.portfolio-form-container h3 {
+    text-align: center;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-weight: 700;
+}
+
+/* Grupowanie etykiety i pola input */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9em;
+    margin-bottom: 6px;
+    color: #c0c5cb; /* Jaśniejszy kolor etykiety */
+}
+
+/* Stylizacja pól input (kluczowe dla wyglądu) */
+.portfolio-form-container input[type="text"],
+.portfolio-form-container input[type="number"],
+.portfolio-form-container input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #525f6c; /* Ciemniejsze pole input */
+    border: 1px solid #6a7885;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 1em;
+    box-sizing: border-box; /* Ważne dla zachowania paddingu */
+}
+
+/* Wygląd strzałek w polach numerycznych (dla Chrome/Safari) */
+.portfolio-form-container input[type=number]::-webkit-inner-spin-button, 
+.portfolio-form-container input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+/* Dla Firefox */
+.portfolio-form-container input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Układ dla pól obok siebie */
+.form-row {
+    display: flex;
+    gap: 16px; /* Odstęp między polami */
+}
+
+.form-row .form-group {
+    flex: 1; /* Każde pole zajmuje równą szerokość */
+}
+
+/* Stylizacja przełącznika Kupno/Sprzedaż */
+.button-toggle {
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 1em;
+    font-weight: 700;
+    border: none;
+    background-color: #525f6c; /* Domyślny, nieaktywny kolor */
+    color: #c0c5cb;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Aktywny przycisk "Kupno" */
+.toggle-btn.active[data-type="buy"] {
+    background-color: #28a745; /* Zielony jak "Buy" */
+    color: #ffffff;
+}
+
+/* Aktywny przycisk "Sprzedaż" */
+.toggle-btn.active[data-type="sell"] {
+    background-color: #dc3545; /* Czerwony jak "Sell" */
+    color: #ffffff;
+}
+
+/* Podsumowanie wartości */
+.total-value-summary {
+    border-top: 1px solid #525f6c;
+    border-bottom: 1px solid #525f6c;
+    padding: 16px 0;
+    margin: 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-value-summary label {
+    font-size: 0.9em;
+    color: #c0c5cb;
+    margin: 0;
+}
+
+.total-value-summary strong {
+    font-size: 1.1em;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* Główny przycisk "Dodaj" */
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1em;
+    font-weight: 700;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+/* Dynamiczna zmiana koloru przycisku głównego */
+.btn-submit.btn-buy {
+    background-color: #28a745; /* Zielony */
+}
+
+.btn-submit.btn-sell {
+    background-color: #dc3545; /* Czerwony */
+}

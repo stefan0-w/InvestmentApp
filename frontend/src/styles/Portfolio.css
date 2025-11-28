@@ -13,3 +13,64 @@
   font-weight: 600;
   border-bottom: 2px solid #ddd;
 }
+
+.transaction-button {
+    background-color: #8b9ea8;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.transaction-button:hover {
+    background-color: #363e50;
+}
+
+.portfolio-details{
+  display: flex;
+  justify-content: space-between;
+}
+
+.add-asset-fab {
+    position: fixed; /* Będzie pływać */
+    bottom: 70%; /* Przesuwa go do środka wysokości */
+    right: 65px; /* 20px od prawej krawędzi */
+    transform: translateY(50%); /* Koryguje pozycję pionową, żeby był dokładnie na środku */
+    
+    width: 50px; /* Szerokość */
+    height: 50px; /* Wysokość (kwadratowy) */
+    border-radius: 8px; /* Lekko zaokrąglone rogi (jak modal) */
+    background-color: #3a4753; /* Ciemne tło, jak modal i inputy */
+    color: #ffffff; /* Biały plus */
+    font-size: 2.2em; /* Rozmiar plusa */
+    line-height: 1; /* Wyrównanie plusa w pionie */
+    display: flex; /* Flexbox dla centrowania plusa */
+    justify-content: center; /* Centrowanie poziome */
+    align-items: center; /* Centrowanie pionowe */
+    cursor: pointer; /* Kursor wskazujący, że można kliknąć */
+    border: none; /* Brak domyślnej ramki */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Delikatny cień */
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Płynne animacje */
+    z-index: 999; /* Upewnij się, że jest nad innymi elementami */
+}
+
+.add-asset-fab:hover {
+    background-color: #525f6c; /* Ciemniejszy kolor przy najechaniu */
+    transform: translateY(50%) scale(1.05); /* Lekkie powiększenie przy najechaniu */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); /* Wyraźniejszy cień */
+}
+
+/* Możesz też dodać media queries, żeby na małych ekranach był na dole, a nie na środku */
+@media (max-width: 768px) {
+    .add-asset-fab {
+        bottom: 20px; /* Na dole ekranu */
+        right: 20px;
+        transform: none; /* Usuń transform, bo już nie centrujemy pionowo */
+    }
+
+    .add-asset-fab:hover {
+        transform: scale(1.05); /* Zostaw tylko skalowanie */
+    }
+}

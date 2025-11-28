@@ -1,36 +1,152 @@
-.modalOverlay{
-  width: 100vw;
-  height: 100vh;
-  top:0;
-  left:0;
-  background-color: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* ... (wszystkie style .modalOverlay, .modalContainer, itd. zostają) ... */
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+body {
+    font-family: 'Lato', sans-serif;
 }
 
-.modalContainer{
-  position: absolute;
-  background-color: white;
-  border-radius: 6px;
-  background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  overflow: visible;
+/* Tło modala (nakładka) */
+.modalOverlay {
+    /* ... (bez zmian) ... */
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.modalCloseBtn{
-  display: flex;
-  justify-content: flex-end;
-  background: none;
-  border: none;
-  cursor: pointer;
+/* Kontener modala (okno) */
+.modalContainer {
+    /* ... (bez zmian) ... */
+    background-color: #3a4753;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    box-sizing: border-box;
 }
 
-.modalForm{
-  display: flex;
-  flex-direction: column;
+/* Przycisk zamknięcia "X" */
+.modalCloseBtn {
+    /* ... (bez zmian) ... */
+    display: flex;
+    justify-content: flex-end;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #c0c5cb;
+    font-size: 1.2rem;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+/* --- Style dla formularza wewnątrz modala --- */
+.modalFormContent {
+    /* ... (bez zmian) ... */
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    color: #e0e0e0;
+}
+
+.modalFormContent h3 {
+    /* ... (bez zmian) ... */
+    text-align: center;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-weight: 700;
+}
+
+.modalFormContent .form-group {
+    /* ... (bez zmian) ... */
+    margin-bottom: 16px;
+}
+
+.modalFormContent .form-group label {
+    /* ... (bez zmian) ... */
+    display: block;
+    font-size: 0.9em;
+    margin-bottom: 6px;
+    color: #c0c5cb;
+}
+
+/* Informacja o wybranym aktywie */
+.modalFormContent .asset-selected-info {
+    font-size: 0.9em;
+    color: #c0c5cb;
+    margin: 8px 0 0 0;
+    padding: 8px;
+    background-color: #525f6c;
+    border-radius: 4px;
+}
+
+
+.modalFormContent input[type="text"],
+.modalFormContent input[type="number"],
+.modalFormContent input[type="date"] {
+    /* ... (bez zmian) ... */
+    width: 100%;
+    padding: 12px;
+    background-color: #525f6c;
+    border: 1px solid #6a7885;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 1em;
+    box-sizing: border-box;
+    color-scheme: dark;
+}
+
+/* ... (style dla placeholder i input[type=number] zostają) ... */
+.modalFormContent input::placeholder {
+    color: #909da9;
+}
+.modalFormContent input[type=number]::-webkit-inner-spin-button,
+.modalFormContent input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none; margin: 0;
+}
+.modalFormContent input[type=number] { -moz-appearance: textfield; }
+
+
+/* === NOWE STYLE PRZYCISKÓW === */
+
+/* Wspólny styl dla przycisków */
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1em;
+    font-weight: 700;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 10px;
+}
+
+/* Kolor dla KUPNA (zielony) */
+.btn-submit.btn-buy {
+    background-color: #28a745;
+}
+.btn-submit.btn-buy:hover {
+    background-color: #218838;
+}
+
+/* Kolor dla SPRZEDAŻY (czerwony) */
+.btn-submit.btn-sell {
+    background-color: #dc3545;
+}
+.btn-submit.btn-sell:hover {
+    background-color: #c82333;
 }
