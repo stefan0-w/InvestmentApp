@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Asset, Transaction, Portfolio
+from .models import Asset, Transaction, Portfolio, HistoricalPortfolioValue
 from rest_framework.validators import UniqueValidator
 
 # --- Serializery Użytkownika i Aktywów (z drobnymi poprawkami) ---
@@ -80,6 +80,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             # Możesz dodać więcej typów z Finnhub w przyszłości
             'ADR': 'STOCK', 
             'Preferred Stock': 'STOCK',
+            'ETP' : 'ETF'
         }
 
         mapped_type = TYPE_MAPPING.get(type_from_finnhub, 'STOCK')
@@ -103,10 +104,11 @@ class PortfolioSerializer(serializers.ModelSerializer):
     transactions = TransactionSerializer(many=True, read_only=True)
     total_value = serializers.SerializerMethodField()
     assets_summary = serializers.SerializerMethodField()
+    type_allocation = serializers.SerializerMethodField()
 
     class Meta:
         model = Portfolio
-        fields = ['id', 'name', 'total_value', 'assets_summary', 'transactions']
+        fields = ['id', 'name', 'total_value', 'assets_summary', 'transactions', 'type_allocation']
     
     def get_portfolio_details(self, portfolio_instance):
         """
@@ -126,3 +128,15 @@ class PortfolioSerializer(serializers.ModelSerializer):
         """Pobiera podsumowanie aktywów z obliczonych danych."""
         details = self.get_portfolio_details(portfolio_instance)
         return details.get('assets_summary')
+    
+    def get_type_allocation(self, portfolio_instance):
+        """Pobiera dane alokacji z obliczonych detali."""
+        # Użyj tej samej metody pomocniczej co dla innych pól
+        details = self.get_portfolio_details(portfolio_instance) 
+        return details.get('type_allocation', [])
+    
+
+class HistoricalValueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HistoricalPortfolioValue
+        fields = ['value', 'profit_loss', 'date']

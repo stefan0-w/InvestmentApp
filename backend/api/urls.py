@@ -5,7 +5,9 @@ from .views import (
     PortfolioDetailView, 
     TransactionViewSet,
     SearchAssetsView,
-    QuoteSymbolView
+    QuoteSymbolView,
+    PortfolioHistoryView,
+    ImportXTBView
 )
 router = DefaultRouter()
 router.register(r'transactions', TransactionViewSet, basename='transaction')
@@ -16,7 +18,8 @@ urlpatterns = [
 
     # Endpoint do pobierania JEDYNEGO portfela zalogowanego użytkownika
     path('portfolio/', PortfolioDetailView.as_view(), name='portfolio-detail'),
-
+    path('portfolio/history/', PortfolioHistoryView.as_view(), name='portfolio-history'),
+    path('import-xtb/', ImportXTBView.as_view(), name='import-xtb'),
     # Endpointy do komunikacji z zewnętrznym API
     path('assets/search/', SearchAssetsView.as_view(), name='search-assets'),
     path('assets/quote/', QuoteSymbolView.as_view(), name='quote-symbol'),
