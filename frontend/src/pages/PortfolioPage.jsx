@@ -49,10 +49,7 @@ function Portfolio() {
   // KROK 2: WYŚWIETL KONKRETNE DANE Z OBIEKTU
   return (
     <div>
-      <button onClick={() => setIsBuyModalOpen(true)}>
-        Add new Asset
-      </button>
-
+      
       {/* Modal jest renderowany tutaj, ale jest niewidoczny
         dopóki 'isModalOpen' nie jest 'true'
       */}
@@ -61,8 +58,14 @@ function Portfolio() {
         onClose={() => setIsBuyModalOpen(false)} 
         onSuccess={handleBuySuccess}
       />
-      <h1>{portfolio.name}</h1>
-      <h2>Total Value: ${portfolio.total_value.toFixed(2)}</h2>
+      <h1 className='portfolio-name'>{portfolio.name}</h1>
+      <div className='portfolio-details'>
+        <h2>Total Value: ${portfolio.total_value.toFixed(2)}</h2>
+        <button onClick={() => setIsBuyModalOpen(true)} className='add-asset-fab'>
+          +
+        </button>
+      </div>
+      
 
       <h3>Your Assets:</h3>
       {portfolio.assets_summary.length > 0 ? (
