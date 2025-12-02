@@ -39,6 +39,8 @@ class Transaction(models.Model):
   price = models.DecimalField(max_digits=18, decimal_places=8)
   transaction_type = models.CharField(max_length=4, choices=TRANSACTION_TYPE)
   transaction_date = models.DateTimeField()
+  broker = models.CharField(max_length=50, null=True, blank=True)
+  source = models.CharField(max_length=20, default="manual") 
 
   def __str__(self): 
     return f"{self.portfolio.user.username} - {self.transaction_type} {self.asset.symbol}"
