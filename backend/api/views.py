@@ -10,7 +10,7 @@ from .serializers import UserSerializer, TransactionSerializer, PortfolioSeriali
 # Importujemy logikę z warstwy serwisowej
 # (Zakładamy, że ten plik istnieje, zgodnie z naszymi ustaleniami)
 from .services.market_data_services import search_finnhub_assets, get_finnhub_quote
-
+from .services.csv_import_service import import_xtb_xlsx
 # --- WIDOKI ZWIĄZANE Z UŻYTKOWNIKIEM I PORTFELEM ---
 
 class CreateUserView(generics.CreateAPIView):
@@ -103,14 +103,14 @@ class PortfolioHistoryView(APIView):
         return Response(serializer.data)
     
 
-from .services.csv_import_service import import_xtb_transactions
-
 class ImportXTBView(APIView):
     def post(self, request):
         file = request.FILES.get("file")
-        if file is None:
+        if not file:
             return Response({"error": "Brak pliku"}, status=400)
 
-        import_xtb_transactions(file, request.user)
-
-        return Response({"status": "OK"})
+        try:
+            import_xtb_xlsx(file, request.user)
+            return Response({"status": "OK"})
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)

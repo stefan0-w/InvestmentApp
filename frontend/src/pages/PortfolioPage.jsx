@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import api from '../api';
 import PortfolioItem from '../components/PortfolioItem';
+//import PortfolioHistoryChart from './PortfolioHistoryChart';
 import '../styles/Portfolio.css'
 import TransactionModal from '../components/TransactionModal';
+import XtbImporter from '../components/XtbImporter';
 
 function Portfolio() {
   // Dobra praktyka: nazwy stanów z małej litery
@@ -66,7 +68,8 @@ function Portfolio() {
         </button>
       </div>
       
-
+      <XtbImporter/>
+      
       <h3>Your Assets:</h3>
       {portfolio.assets_summary.length > 0 ? (
         <table className='portfolioTable'>

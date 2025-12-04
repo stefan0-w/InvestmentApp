@@ -1,0 +1,51 @@
+.xtb-wrapper {
+  margin-bottom: 20px;
+}
+
+.xtb-toggle {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #4a6cf7;
+  color: white;
+  font-size: 14px;
+}
+
+.xtb-dropzone {
+  border: 2px dashed #999;
+  border-radius: 10px;
+  padding: 25px;
+  text-align: center;
+  margin-top: 15px;
+  transition: 0.2s;
+}
+
+.xtb-dropzone.active {
+  border-color: #4a6cf7;
+  background: #eef2ff;
+}
+
+.xtb-file-input {
+  display: none;
+}
+
+.xtb-text {
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.xtb-selected {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.xtb-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #4a6cf7;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
