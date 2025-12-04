@@ -63,7 +63,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         # Zniknęło pole 'portfolio'!
         fields = ['id', 'asset', 'asset_data', 'transaction_type', 'quantity', 'price', 'transaction_date']
-        read_only_fields = ['id', 'transaction_date', 'asset']
+        read_only_fields = ['id', 'asset']
 
     def create(self, validated_data):
         asset_data = validated_data.pop('asset_data')
@@ -131,7 +131,6 @@ class PortfolioSerializer(serializers.ModelSerializer):
     
     def get_type_allocation(self, portfolio_instance):
         """Pobiera dane alokacji z obliczonych detali."""
-        # Użyj tej samej metody pomocniczej co dla innych pól
         details = self.get_portfolio_details(portfolio_instance) 
         return details.get('type_allocation', [])
     

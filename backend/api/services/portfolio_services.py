@@ -80,28 +80,51 @@ def calculate_portfolio_details(portfolio):
             
             # POPRAWKA 2: Bezpieczne pobieranie ceny z API
             price_data = price_map.get(symbol) 
-            current_price_float = price_data['c'] if price_data is not None else 0.0 # Użyj 0.0 jeśli API zawiedzie
-            current_price = Decimal(str(current_price_float))
+            current_price_float = 0.0
 
-            current_value = data['quantity'] * current_price
-            total_value += current_value
+            price_available = False
+            if isinstance(price_data, dict):
+                # Jeśli .get('c') zwróci 0.0, Finnhub nie ma aktualnej ceny, ale to też jest poprawna odpowiedź
+                # Musimy założyć, że 0.0 z API oznacza brak ceny dla Twojego celu.
+                fetched_price = price_data.get('c', 0.0)
+                
+                if fetched_price > 0:
+                    current_price_float = fetched_price
+                    price_available = True
             
-            unrealized_gain = (current_price - average_cost) * data['quantity']
+            current_price = Decimal(str(current_price_float))
+            
+            # --- KLUCZOWA ZMIANA B: WARUNKOWE OBLICZANIE WARTOSCI PORTFELA ---
+            if price_available:
+                # Tylko aktywa z dostępną ceną wpływają na sumę portfela
+                current_value = data['quantity'] * current_price
+                total_value += current_value 
+                
+                # Tylko aktywa z dostępną ceną wchodzą w alokację
+                asset_type = data['asset'].type
+                if asset_type not in type_allocation:
+                    type_allocation[asset_type] = Decimal('0.00')
+                type_allocation[asset_type] += current_value
 
-            asset_type = data['asset'].type # Zakładając, że to pole istnieje
-            if asset_type not in type_allocation:
-                type_allocation[asset_type] = Decimal('0.00')
-            type_allocation[asset_type] += current_value
+                unrealized_gain = (current_price - average_cost) * data['quantity']
+                
+            else:
+                # Aktywa bez ceny nie wpływają na sumy, a ich wartość rynkowa to 0.0
+                # Nie chcemy ich pomijać w summary, więc ustawiamy wartość na 0.0
+                current_value = Decimal('0.00')
+                unrealized_gain = Decimal('0.00')
 
+            # --- KLUCZOWA ZMIANA C: Dodanie flagi do Summary dla Front-endu ---
             assets_summary.append({
                 'symbol': symbol,
                 'name': data['asset'].name,
                 'type': data['asset'].type,
                 'quantity': data['quantity'],
-                'average_cost': average_cost, # Dodano
+                'average_cost': average_cost,
                 'current_price': current_price,
                 'current_value': current_value,
-                'unrealized_gain': unrealized_gain, # Dodano
+                'unrealized_gain': unrealized_gain,
+                'price_available': price_available, # NOWA FLAGA DLA FRONT-ENDU!
             })
 
     total_portfolio_value = total_value # To jest 'total_value' z Twojego obecnego kodu

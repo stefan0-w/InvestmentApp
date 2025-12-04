@@ -33,7 +33,7 @@ def search_finnhub_assets(query: str):
 
     except requests.exceptions.HTTPError as http_err:
         print(f"Błąd HTTP: {http_err}")
-        return {"error": f"Finnhub API error: {http_err.response.status_code}"}
+        return {}
     except requests.exceptions.RequestException as err:
         # Ogólny błąd (np. brak połączenia)
         print(f"Błąd Requests: {err}")
