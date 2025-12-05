@@ -7,7 +7,8 @@ from .views import (
     SearchAssetsView,
     QuoteSymbolView,
     PortfolioHistoryView,
-    ImportXTBView
+    ImportXTBView,
+    InvestorProfileView
 )
 router = DefaultRouter()
 router.register(r'transactions', TransactionViewSet, basename='transaction')
@@ -23,6 +24,8 @@ urlpatterns = [
     # Endpointy do komunikacji z zewnętrznym API
     path('assets/search/', SearchAssetsView.as_view(), name='search-assets'),
     path('assets/quote/', QuoteSymbolView.as_view(), name='quote-symbol'),
+    
+    path('advisor/save-profile/', InvestorProfileView.as_view(), name='save_profile'),
 
     # Dołączamy URL-e wygenerowane przez router (dla /transactions/)
     path('', include(router.urls)),

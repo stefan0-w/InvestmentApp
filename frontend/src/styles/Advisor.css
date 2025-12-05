@@ -1,0 +1,123 @@
+/* Advisor.css */
+
+.advisor-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif; /* lub czcionka Twojej aplikacji */
+}
+
+.advisor-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.advisor-title {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.advisor-description {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Sekcja Pytania */
+.question-section {
+  text-align: left;
+}
+
+.question-counter {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.question-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 0.5rem;
+}
+
+.question-subtext {
+  font-style: italic;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+.answers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.answer-btn {
+  padding: 15px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.answer-btn:hover {
+  background-color: #e6f7ff; /* Jasny niebieski przy najechaniu */
+  border-color: #1890ff;
+}
+
+.back-btn {
+  margin-top: 20px;
+  background: none;
+  border: none;
+  color: #666;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  color: #000;
+}
+
+/* Sekcja Wyniku */
+.result-section {
+  text-align: center;
+}
+
+.chart-container {
+  height: 350px; /* Ważne dla Recharts */
+  width: 100%;
+  margin: 20px 0;
+}
+
+.risk-badge {
+  display: inline-block;
+  background-color: #eee;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.restart-btn {
+  padding: 10px 24px;
+  background-color: #1890ff; /* Główny kolor przycisku */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.restart-btn:hover {
+  background-color: #096dd9;
+}

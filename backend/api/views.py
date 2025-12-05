@@ -3,9 +3,9 @@ from rest_framework import generics, viewsets, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-
-from .models import Portfolio, Transaction, HistoricalPortfolioValue
-from .serializers import UserSerializer, TransactionSerializer, PortfolioSerializer, HistoricalValueSerializer
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Portfolio, Transaction, HistoricalPortfolioValue, InvestorProfile
+from .serializers import UserSerializer, TransactionSerializer, PortfolioSerializer, HistoricalValueSerializer, InvestorProfileSerializer
 
 # Importujemy logikę z warstwy serwisowej
 # (Zakładamy, że ten plik istnieje, zgodnie z naszymi ustaleniami)
@@ -98,12 +98,13 @@ class PortfolioHistoryView(APIView):
             portfolio=request.user.portfolio
         ).order_by('date')
         
-        # Stwórz prosty serializer dla HistoricalPortfolioValue
         serializer = HistoricalValueSerializer(history, many=True) 
         return Response(serializer.data)
     
 
 class ImportXTBView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         file = request.FILES.get("file")
         if not file:
@@ -114,3 +115,31 @@ class ImportXTBView(APIView):
             return Response({"status": "OK"})
         except Exception as e:
             return Response({"error": str(e)}, status=400)
+
+class InvestorProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        
+        try:
+            profile = request.user.investor_profile 
+            serializer = InvestorProfileSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        user = request.user
+        profile_type = request.data.get('profile_type')
+
+        if not profile_type:
+            return Response({'error': 'Profile type is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update or Create (używamy update_or_create aby nadpisać stary profil jeśli użytkownik robi quiz ponownie)
+        profile, created = InvestorProfile.objects.update_or_create(
+            user=user,
+            defaults={'profile_type': profile_type}
+        )
+
+        serializer = InvestorProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)

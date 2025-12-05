@@ -139,3 +139,10 @@ class HistoricalValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = HistoricalPortfolioValue
         fields = ['value', 'profit_loss', 'date']
+
+from .models import InvestorProfile
+
+class InvestorProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvestorProfile
+        fields = ['profile_type', 'updated_at']
