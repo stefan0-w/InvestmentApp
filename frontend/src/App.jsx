@@ -8,7 +8,8 @@ import PortfolioPage from "./pages/PortfolioPage"
 import Charts from "./pages/Charts";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
-import Layout from "./components/Layout"; // <-- IMPORTUJEMY LAYOUT
+import Layout from "./components/Layout"; 
+import Advisor from "./components/Advisor";
 import TransactionHistory from "./pages/TransactionHistory";
 
 import "../src/styles/Form.css";
@@ -51,7 +52,7 @@ function App() {
                     <Route path="portfolio" element={<PortfolioPage />} />
                     <Route path="charts" element={<Charts />} />
                     <Route path="history" element={<TransactionHistory />} />
-                    {/* np. <Route path="ustawienia" element={<SettingsPage />} /> */}
+                    <Route path="advisor" element={<Advisor/>}/>
                 </Route>
 
                 {/* Trasa "łapiąca" wszystkie inne, niepasujące adresy */}

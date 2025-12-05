@@ -23,7 +23,7 @@ const Sidebar = () => {
                     <Link to="/history">Transaction History</Link>
                 </li>
                 <li>
-                    <Link to="/news">News</Link>
+                    <Link to="/advisor">Advisor</Link>
                 </li>
             </ul>
         </nav>
