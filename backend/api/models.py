@@ -56,3 +56,19 @@ class HistoricalPortfolioValue(models.Model):
         # Zapewnia, że masz tylko jeden wpis na portfel na dany dzień
         unique_together = ('portfolio', 'date')
         ordering = ['date']
+
+class InvestorProfile(models.Model):
+    PROFILE_CHOICES = [
+        ('SAFE', 'Capital Protection'),
+        ('CONSERVATIVE', 'Conservative'),
+        ('BALANCED', 'Balanced'),
+        ('DYNAMIC', 'Dynamic'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='investor_profile')
+    profile_type = models.CharField(max_length=20, choices=PROFILE_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.profile_type}"
