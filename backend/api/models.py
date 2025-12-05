@@ -72,3 +72,24 @@ class InvestorProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.profile_type}"
+    
+
+class JournalEntry(models.Model):
+    CATEGORY_CHOICES = [
+        ('BUY', 'Buy'),
+        ('SELL', 'Sell'),
+        ('NOTE', 'Note'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='journal_entries')
+    date = models.DateField()
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default='NOTE')
+    symbol = models.CharField(max_length=10, blank=True, null=True)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date', '-created_at']
+
+    def __str__(self):
+        return f"{self.date} - {self.category} - {self.symbol}"
