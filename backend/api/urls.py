@@ -8,10 +8,13 @@ from .views import (
     QuoteSymbolView,
     PortfolioHistoryView,
     ImportXTBView,
-    InvestorProfileView
+    InvestorProfileView,
+    JournalEntryViewSet
 )
+
 router = DefaultRouter()
 router.register(r'transactions', TransactionViewSet, basename='transaction')
+router.register(r'journal', JournalEntryViewSet, basename='journal')
 
 urlpatterns = [
     # Endpoint do rejestracji użytkownika

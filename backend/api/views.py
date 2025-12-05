@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Portfolio, Transaction, HistoricalPortfolioValue, InvestorProfile
-from .serializers import UserSerializer, TransactionSerializer, PortfolioSerializer, HistoricalValueSerializer, InvestorProfileSerializer
+from .models import Portfolio, Transaction, HistoricalPortfolioValue, InvestorProfile, JournalEntry
+from .serializers import UserSerializer, TransactionSerializer, PortfolioSerializer, HistoricalValueSerializer, InvestorProfileSerializer, JournalEntrySerializer
 
 # Importujemy logikę z warstwy serwisowej
 # (Zakładamy, że ten plik istnieje, zgodnie z naszymi ustaleniami)
@@ -143,3 +143,14 @@ class InvestorProfileView(APIView):
 
         serializer = InvestorProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class JournalEntryViewSet(viewsets.ModelViewSet):
+    serializer_class = JournalEntrySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return JournalEntry.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

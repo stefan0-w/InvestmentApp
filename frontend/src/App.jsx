@@ -9,14 +9,16 @@ import Charts from "./pages/Charts";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout"; 
-import Advisor from "./components/Advisor";
+import AdvisorPage from "./pages/AdvisorPage";
 import TransactionHistory from "./pages/TransactionHistory";
+import Journal from "./components/Journal";
 
 import "../src/styles/Form.css";
 // Zaimportuj też nowe pliki CSS
 import "../src/styles/Layout.css";
 import "../src/styles/Sidebar.css";
 import "../src/styles/TopBar.css";
+
 
 function Logout() {
     localStorage.clear();
@@ -52,7 +54,8 @@ function App() {
                     <Route path="portfolio" element={<PortfolioPage />} />
                     <Route path="charts" element={<Charts />} />
                     <Route path="history" element={<TransactionHistory />} />
-                    <Route path="advisor" element={<Advisor/>}/>
+                    <Route path="advisor" element={<AdvisorPage/>}/>
+                    <Route path="journal" element={<Journal/>}/>
                 </Route>
 
                 {/* Trasa "łapiąca" wszystkie inne, niepasujące adresy */}

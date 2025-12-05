@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Asset, Transaction, Portfolio, HistoricalPortfolioValue
+from .models import Asset, Transaction, Portfolio, HistoricalPortfolioValue, JournalEntry
 from rest_framework.validators import UniqueValidator
 
 # --- Serializery Użytkownika i Aktywów (z drobnymi poprawkami) ---
@@ -146,3 +146,9 @@ class InvestorProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvestorProfile
         fields = ['profile_type', 'updated_at']
+
+
+class JournalEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JournalEntry
+        fields = ['id', 'date', 'category', 'symbol', 'content']

@@ -25,6 +25,9 @@ const Sidebar = () => {
                 <li>
                     <Link to="/advisor">Advisor</Link>
                 </li>
+                <li>
+                    <Link to="/journal">Investor Journal</Link>
+                </li>
             </ul>
         </nav>
     );
