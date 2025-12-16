@@ -12,6 +12,7 @@ import Layout from "./components/Layout";
 import AdvisorPage from "./pages/AdvisorPage";
 import TransactionHistory from "./pages/TransactionHistory";
 import Journal from "./components/Journal";
+import ResourcesPage from "./pages/ResourcesPage";
 
 import "../src/styles/Form.css";
 // Zaimportuj też nowe pliki CSS
@@ -56,6 +57,7 @@ function App() {
                     <Route path="history" element={<TransactionHistory />} />
                     <Route path="advisor" element={<AdvisorPage/>}/>
                     <Route path="journal" element={<Journal/>}/>
+                    <Route path="resources" element={<ResourcesPage/>}/>
                 </Route>
 
                 {/* Trasa "łapiąca" wszystkie inne, niepasujące adresy */}

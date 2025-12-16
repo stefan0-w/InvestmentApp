@@ -6,8 +6,8 @@ function PortfolioItem({asset, onDataRefresh}) {
   const [isSellModalOpen, setIsSellModalOpen] = useState(false)
 
   const handleSellSuccess = () => {
-    onDataRefresh();          // Odśwież dane (wywołaj funkcję z PortfolioPage)
-    setIsSellModalOpen(false); // Zamknij modal SPRZEDAŻY
+    onDataRefresh();          
+    setIsSellModalOpen(false);
   };
 
   return (  

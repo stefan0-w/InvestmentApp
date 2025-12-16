@@ -2,14 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     CreateUserView,
-    PortfolioDetailView, 
-    TransactionViewSet,
-    SearchAssetsView,
-    QuoteSymbolView,
-    PortfolioHistoryView,
-    ImportXTBView,
-    InvestorProfileView,
-    JournalEntryViewSet
+    PortfolioDetailView, TransactionViewSet, SearchAssetsView, QuoteSymbolView,
+    PortfolioHistoryView, ImportXTBView, InvestorProfileView, JournalEntryViewSet
 )
 
 router = DefaultRouter()
@@ -20,7 +14,7 @@ urlpatterns = [
     # Endpoint do rejestracji użytkownika
     path('user/register/', CreateUserView.as_view(), name='register'),
 
-    # Endpoint do pobierania JEDYNEGO portfela zalogowanego użytkownika
+    # Endpoint do pobierania portfela zalogowanego użytkownika
     path('portfolio/', PortfolioDetailView.as_view(), name='portfolio-detail'),
     path('portfolio/history/', PortfolioHistoryView.as_view(), name='portfolio-history'),
     path('import-xtb/', ImportXTBView.as_view(), name='import-xtb'),

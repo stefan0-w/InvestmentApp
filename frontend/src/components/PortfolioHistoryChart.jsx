@@ -2,6 +2,41 @@ import React, { useState, useEffect } from 'react';
 import api from '../api'; 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+const CustomTooltip = ({ active, payload, label, format }) => {
+  if (!active || !payload || !payload.length) return null;
+
+  const { value, name } = payload[0];
+  const color = value >= 0 ? "#16a34a" : "#dc2626";
+
+  return (
+    <div
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e5e7eb",
+        padding: "8px 12px",
+        borderRadius: "6px",
+        boxShadow: "0 4px 10px rgba(0,0,0,0.08)"
+      }}
+    >
+      {/* data (X-axis) */}
+      <div style={{ fontSize: "12px", color: "#6b7280", marginBottom: 4 }}>
+        {label}
+      </div>
+
+      {/* NAZWA SERII */}
+      <div style={{ fontSize: "12px", color: "#374151" }}>
+        {name}
+      </div>
+
+      {/* WARTOŚĆ */}
+      <div style={{ fontSize: "15px", fontWeight: 600, color }}>
+        {format(value)}
+      </div>
+    </div>
+  );
+};
+
+
 // --- NOWOŚĆ: Formater dla osi Y (aby dodawał "%") ---
 const percentFormatter = (value) => `${value.toFixed(2)}%`;
 
@@ -62,7 +97,7 @@ function PortfolioHistoryChart() {
         <div className="charts-container" style={{ width: '100%', marginTop: '30px' }}>
             
             {/* === WYKRES 1: WARTOŚĆ PORTFELA (Bez zmian) === */}
-            <h3>Wartość portfela w czasie</h3>
+            <h3>Portfolio value over time</h3>
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -70,26 +105,35 @@ function PortfolioHistoryChart() {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="value" stroke="#8884d8" name="Wartość portfela $" dot={false} />
+                    <Line type="monotone" dataKey="value" stroke="#8884d8" name="Portfolio value $" dot={false} />
                 </LineChart>
             </ResponsiveContainer>
 
             {/* === WYKRES 2: ZYSK/STRATA (Bez zmian) === */}
-            <h3 style={{ marginTop: '30px' }}>Zysk/Strata w czasie</h3>
+            <h3 style={{ marginTop: '30px' }}>Profit/Loss over time</h3>
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip
+                    content={
+                        <CustomTooltip
+                        format={(v) =>
+                            `$${v.toLocaleString("en-US", { minimumFractionDigits: 2 })}`
+                        }
+                        />
+                    }
+                    />
+
                     <Legend />
                     <Line type="monotone" dataKey={() => 0} stroke="#ccc" name="Zero" dot={false} />
-                    <Line type="monotone" dataKey="profit_loss" stroke="#82ca9d" name="Zysk/Strata $" dot={false} />
+                    <Line type="monotone" dataKey="profit_loss" stroke="#82ca9d" name="Profit/Loss $" dot={false} />
                 </LineChart>
             </ResponsiveContainer>
 
             {/* === NOWY WYKRES 3: STOPA ZWROTU W % === */}
-            <h3 style={{ marginTop: '30px' }}>Stopa zwrotu %</h3>
+            <h3 style={{ marginTop: '30px' }}>Rate of return %</h3>
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -97,14 +141,21 @@ function PortfolioHistoryChart() {
                     {/* Używamy formatera, aby dodać "%" do osi Y */}
                     <YAxis tickFormatter={percentFormatter} /> 
                     {/* Tooltip też formatujemy, aby pokazywał "%" */}
-                    <Tooltip formatter={(value) => `${value.toFixed(2)}%`} />
+                    <Tooltip
+                    content={
+                        <CustomTooltip
+                        format={(v) => `${v.toFixed(2)}%`}
+                        />
+                    }
+                    />
+
                     <Legend />
                     <Line type="monotone" dataKey={() => 0} stroke="#ccc" name="Zero" dot={false} />
                     <Line 
                         type="monotone" 
                         dataKey="rateOfReturn" // Używamy naszego nowego, obliczonego pola
                         stroke="#ffc658" // Żółty kolor
-                        name="Stopa zwrotu (%)" 
+                        name="Return rate (%)" 
                         dot={false}
                     />
                 </LineChart>

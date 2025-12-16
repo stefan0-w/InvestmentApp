@@ -28,6 +28,9 @@ const Sidebar = () => {
                 <li>
                     <Link to="/journal">Investor Journal</Link>
                 </li>
+                <li>
+                    <Link to="/resources">Learning Resources</Link>
+                </li>
             </ul>
         </nav>
     );

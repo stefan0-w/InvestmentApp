@@ -105,15 +105,13 @@ class PortfolioSerializer(serializers.ModelSerializer):
     total_value = serializers.SerializerMethodField()
     assets_summary = serializers.SerializerMethodField()
     type_allocation = serializers.SerializerMethodField()
+    symbol_allocation = serializers.SerializerMethodField()
 
     class Meta:
         model = Portfolio
-        fields = ['id', 'name', 'total_value', 'assets_summary', 'transactions', 'type_allocation']
+        fields = ['id', 'name', 'total_value', 'assets_summary', 'transactions', 'type_allocation', 'symbol_allocation']
     
     def get_portfolio_details(self, portfolio_instance):
-        """
-        Pomocnicza metoda, aby obliczyć dane tylko raz i przechować je w kontekście.
-        """
         if not hasattr(self, '_details_cache'):
             # Wywołaj serwis TYLKO RAZ
             self._details_cache = calculate_portfolio_details(portfolio_instance)
@@ -134,6 +132,9 @@ class PortfolioSerializer(serializers.ModelSerializer):
         details = self.get_portfolio_details(portfolio_instance) 
         return details.get('type_allocation', [])
     
+    def get_symbol_allocation(self, portfolio_instance):
+        details = self.get_portfolio_details(portfolio_instance)
+        return details.get('symbol_allocation', [])
 
 class HistoricalValueSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,24 +1,54 @@
-.xtb-wrapper {
-  margin-bottom: 20px;
+.importer-wrapper {
+  margin-bottom: 25px;
 }
 
-.xtb-toggle {
-  padding: 10px 16px;
+/* Krok 0 – przycisk */
+.importer-start-btn {
+  padding: 12px 20px;
   border-radius: 8px;
   border: none;
-  cursor: pointer;
   background: #4a6cf7;
   color: white;
+  cursor: pointer;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+/* Broker selection */
+.importer-broker-select h4 {
+  margin-bottom: 10px;
+}
+
+.broker-btn {
+  display: block;
+  width: 100px;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #e5e7eb;
+  border: none;
+  cursor: pointer;
+}
+
+.broker-btn:hover {
+  background: #d5d6d9;
+}
+
+/* Breadcrumb info */
+.importer-breadcrumb {
+  margin-bottom: 12px;
   font-size: 14px;
 }
 
+/* Dropzone */
 .xtb-dropzone {
   border: 2px dashed #999;
   border-radius: 10px;
   padding: 25px;
   text-align: center;
-  margin-top: 15px;
   transition: 0.2s;
+  margin-bottom: 10px;
+  width: 300px;
 }
 
 .xtb-dropzone.active {
@@ -32,12 +62,12 @@
 
 .xtb-text {
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .xtb-selected {
-  margin-bottom: 10px;
   font-weight: bold;
+  margin-top: 5px;
 }
 
 .xtb-button {
@@ -48,4 +78,19 @@
   color: white;
   cursor: pointer;
   font-size: 14px;
+  margin-right: 10px;
+}
+
+.importer-back-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #d1d5db;
+  border: none;
+  cursor: pointer;
+}
+
+.broker-icon {
+  width: 52px;
+  height: auto;
+  margin-right: 8px;
 }

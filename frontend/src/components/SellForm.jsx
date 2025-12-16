@@ -5,11 +5,25 @@ function SellForm({assetToSell, onSuccess}) {
   const [sellPrice, setSellPrice] = useState("");
   const [quantitySold, setQuantitySold] = useState("");
   const [transactionDate, setTransactionDate] = useState(new Date().toISOString().split("T")[0])
+  const [error, setError] = useState("");
+  const availableQuantity = parseFloat(assetToSell.quantity);
+
+  const handleQuantityChange = (e) => {
+    const val = e.target.value;
+    setQuantitySold(val);
+
+    // Walidacja w czasie rzeczywistym
+    if (parseFloat(val) > availableQuantity) {
+      setError(`You have only ${availableQuantity} shares`);
+    } else {
+      setError("");
+    }
+  };
 
   const handleSubmit = async (e) => {
       e.preventDefault();
       if (!quantitySold || !sellPrice || !transactionDate) {
-        alert("Wszystkie pola są wymagane!");
+        alert("All fields are required!");
         return;
       }
 
@@ -44,15 +58,17 @@ function SellForm({assetToSell, onSuccess}) {
         <div className='form-group'>
           <label htmlFor="volume">Volume</label>
           <input
-            id="volume"
-            type="number"
-            step="0.01"
-            value={quantitySold}
-            onChange={(e) => setQuantitySold(e.target.value)}
-            placeholder="e.g., 0.5" 
-            required
-          />
+              id="volume"
+              type="number"
+              step="any"
+              value={quantitySold}
+              onChange={handleQuantityChange}
+              placeholder="e.g., 0.5" 
+              required
+              style={{flex: 1, borderColor: error ? 'red' : '#ccc'}}
+            />
         </div>
+        {error && <span style={{color: 'red', fontSize: '0.85rem'}}>{error}</span>}
         <div className='form-group'>
           <label htmlForor="price">Price</label>
           <input
@@ -77,7 +93,7 @@ function SellForm({assetToSell, onSuccess}) {
         </div>
         
 
-        <button type="submit" className="btn-submit btn-sell">
+        <button type="submit" className="btn-submit btn-sell" disabled={!!error}>
           Sell
         </button>
       </form>
