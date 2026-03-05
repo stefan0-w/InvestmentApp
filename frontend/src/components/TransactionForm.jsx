@@ -1,48 +1,58 @@
 import { useEffect, useState } from "react";
 import api from "../api";
 import AssetSearchInput from "./AssetSearchInput";
+import '../styles/TransactionForm.css'
 
-function TransactionForm() {
-  const [asset, setAsset] = useState("");
+function TransactionForm({onSuccess}) {
+  const [asset, setAsset] = useState(null);
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [type, setType] = useState("BUY"); // domyślnie BUY
   const [loading, setLoading] = useState(false);
+  const [transactionDate, setTransactionDate] = useState(new Date().toISOString().split("T")[0]);
 
+  //#####ZOSTAWIŁEM TO, NA WYPADEK GDYBYM SIĘ ZDECYDOWAŁ NA TO ŻE USER CHCĘ KUPIĆ PO AKUTALNEJ CENIE A NIE WPISYWAĆ SAMEMU
   // pobieranie ceny po zmianie asset
-  useEffect(() => {
-    if (!asset) return;
+  // useEffect(() => {
+  //   if (!asset) return;
 
-    const fetchPrice = async () => {
-      try {
-        const res = await api.get(`/api/quote/?symbol=${asset}`);
-        setPrice(parseFloat(res.data).toFixed(2));
-      } catch (err) {
-        console.error("Błąd pobierania ceny:", err);
-      }
-    };
+  //   const fetchPrice = async () => {
+  //     try {
+  //       const res = await api.get(`/api/assets/quote/?symbol=${asset.symbol}`);
+  //       setPrice(parseFloat(res.data.c).toFixed(2));
+  //     } catch (err) {
+  //       console.error("Błąd pobierania ceny:", err);
+  //     }
+  //   };
 
-    fetchPrice();
-  }, [asset]); // <-- uruchamia się tylko gdy zmieni się asset
+  //   fetchPrice();
+  // }, [asset]); // <-- uruchamia się tylko gdy zmieni się asset
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!asset || !quantity || !price) {
+    if (!asset || !quantity || !price || !transactionDate) {
       alert("Wszystkie pola są wymagane!");
       return;
     }
 
-    const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
     setLoading(true);
     try {
       const res = await api.post("/api/transactions/", {
-        asset,      // symbol aktywa
+        asset_data: {
+          "symbol" : asset.symbol,
+          "name" : asset.description,
+          "type" : asset.type
+        }, 
         quantity,
         price,
-        type,
-        date
+        transaction_type: type,
+        transaction_date : transactionDate
       });
       alert("Transakcja dodana!");
+
+      if (onSuccess) {
+        onSuccess();
+      }
       // czyścimy formularz
       setAsset("");
       setQuantity("");
@@ -57,37 +67,55 @@ function TransactionForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Add new transaction</h2>
+    <form onSubmit={handleSubmit} className="modalFormContent">
+      <h3>Add new asset</h3>
 
-      <label>Asset</label>
-      <AssetSearchInput onSelect={setAsset} />
-      {asset && <p>Wybrane: {asset}</p>}
+      <div className="form-group">
+          <label htmlFor="asset-search">Asset</label>
+          {/* Twoje pole wyszukiwania */}
+          <AssetSearchInput onSelect={setAsset} />
+          {asset && <p className="asset-selected-info">Wybrane: {asset.symbol} ({asset.description})</p>}
+      </div>
 
-      <label>Quantity</label>
-      <input
-        type="number"
-        step="0.01"
-        value={quantity}
-        onChange={(e) => setQuantity(e.target.value)}
-      />
+      <div className="form-group">
+          <label htmlFor="quantity">Volume</label>
+          <input
+              id="quantity"
+              type="number"
+              step="0.01"
+              placeholder="eg. 10"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              required
+          />
+      </div>
 
-      <label>Price</label>
-      <input
-        type="number"
-        step="0.01"
-        value={price}
-        readOnly // użytkownik nie może zmienić
-      />
+      <div className="form-group">
+          <label htmlFor="price">Price per unit</label>
+          <input
+              id="price"
+              type="number"
+              step="0.01"
+              placeholder="eg. 102.84"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+          />
+      </div>
+      
+      <div className="form-group">
+          <label htmlFor="transaction-date">Transaction Date</label>
+          <input
+              type="date"
+              id="transaction-date"
+              value={transactionDate}
+              onChange={(e) => setTransactionDate(e.target.value)}
+              required
+          />
+      </div>
 
-      <label>Type</label>
-      <select value={type} onChange={(e) => setType(e.target.value)}>
-        <option value="BUY">BUY</option>
-        <option value="SELL">SELL</option>
-      </select>
-
-      <button type="submit" disabled={loading}>
-        {loading ? "Dodawanie..." : "Dodaj transakcję"}
+      <button type="submit" disabled={loading} className="btn-submit btn-buy">
+        {loading ? "Processing..." : "Add"}
       </button>
     </form>
   );

@@ -1,63 +1,155 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Asset, Transaction
+from .models import Asset, Transaction, Portfolio, HistoricalPortfolioValue, JournalEntry
+from rest_framework.validators import UniqueValidator
+
+# --- Serializery Użytkownika i Aktywów (z drobnymi poprawkami) ---
 
 class UserSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(write_only=True)
 
+    email = serializers.EmailField(
+        required=True,
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="Account with this email already exists"
+            )
+        ]
+    )
     class Meta:
         model = User
-        fields = ['id', 'email', 'password', 'password2', 'first_name', 'last_name']
-        read_only_fields = ['id']
-        extra_kwargs = {"password": {"write_only": True}}
-
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Hasła nie są takie same."})
-        return attrs
+        fields = ['id', 'email', 'first_name', 'last_name', 'password']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
     def create(self, validated_data):
-        validated_data['username'] = validated_data['email']
-        validated_data.pop('password2')  # usuwamy dodatkowe pole
-        user = User.objects.create_user(**validated_data)
+        user = User.objects.create_user(
+            username=validated_data['email'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', '')
+        )
         return user
 
-    def update(self, instance, validated_data):
-        instance.email = validated_data.get('email', instance.email)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.password = validated_data.get('password', instance.password)
-        instance.save()
-        return instance
-    
-
 class AssetSerializer(serializers.ModelSerializer):
+    """Ten serializer pozostaje bez zmian. Służy do wyświetlania danych o aktywach."""
     class Meta:
         model = Asset
-        fields = "__all__"
+        fields = ['symbol', 'name', 'type']
 
+class AssetInputSerializer(serializers.Serializer):
+    """Ten serializer również pozostaje bez zmian. Służy do przyjmowania danych o nowym aktywie."""
+    symbol = serializers.CharField(max_length=10)
+    name = serializers.CharField(max_length=100)
+    type = serializers.CharField(max_length=20)
+
+
+# --- GŁÓWNE ZMIANY TUTAJ ---
 
 class TransactionSerializer(serializers.ModelSerializer):
-    asset = serializers.CharField()  # przyjmujemy symbol z frontend
+    """
+    ZNACZNIE UPROSZCZONY serializer transakcji.
+    Nie przejmuje się już portfelem - to zadanie dla widoku.
+    """
+    # Pole do ODCZYTU: Pokazuje pełne dane assetu
+    asset = AssetSerializer(read_only=True)
+    
+    # Pole do ZAPISU: Przyjmuje obiekt z danymi o nowym aktywie
+    asset_data = AssetInputSerializer(write_only=True)
 
     class Meta:
         model = Transaction
-        fields = ['id', 'asset', 'quantity', 'price', 'type', 'date']
-        read_only_fields = ['id', 'date']
+        # Zniknęło pole 'portfolio'!
+        fields = ['id', 'asset', 'asset_data', 'transaction_type', 'quantity', 'price', 'transaction_date']
+        read_only_fields = ['id', 'asset']
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        symbol = validated_data.pop('asset').upper()
+        asset_data = validated_data.pop('asset_data')
+        symbol = asset_data.get('symbol').upper()
 
-        # sprawdzamy czy Asset istnieje
+        type_from_finnhub = asset_data.get('type')
+
+        # 2. Zdefiniuj mapowanie
+        #    Klucz = Co wysyła Finnhub, Wartość = Co jest w Twoim modelu
+        TYPE_MAPPING = {
+            'Common Stock': 'STOCK',
+            'ETF': 'ETF',
+            'Cryptocurrency': 'CRYPTO',
+            # Możesz dodać więcej typów z Finnhub w przyszłości
+            'ADR': 'STOCK', 
+            'Preferred Stock': 'STOCK',
+            'ETP' : 'ETF'
+        }
+
+        mapped_type = TYPE_MAPPING.get(type_from_finnhub, 'STOCK')
+
         asset, created = Asset.objects.get_or_create(
             symbol=symbol,
-            defaults={'description': symbol}  # opcjonalnie później możesz dodać pełną nazwę z Finnhub
+            defaults={
+                'name': asset_data.get('name'),
+                'type': mapped_type  # <--- Użyj nowej, zmapowanej zmiennej
+            }
         )
-
-        transaction = Transaction.objects.create(
-            user=user,
-            asset=asset,
-            **validated_data
-        )
+        # Tworzymy transakcję bez informacji o portfelu.
+        # Widok doda portfel użytkownika tuż przed zapisem.
+        transaction = Transaction.objects.create(asset=asset, **validated_data)
         return transaction
+
+
+from .services.portfolio_services import calculate_portfolio_details
+
+class PortfolioSerializer(serializers.ModelSerializer):
+    transactions = TransactionSerializer(many=True, read_only=True)
+    total_value = serializers.SerializerMethodField()
+    assets_summary = serializers.SerializerMethodField()
+    type_allocation = serializers.SerializerMethodField()
+    symbol_allocation = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Portfolio
+        fields = ['id', 'name', 'total_value', 'assets_summary', 'transactions', 'type_allocation', 'symbol_allocation']
+    
+    def get_portfolio_details(self, portfolio_instance):
+        if not hasattr(self, '_details_cache'):
+            # Wywołaj serwis TYLKO RAZ
+            self._details_cache = calculate_portfolio_details(portfolio_instance)
+        return self._details_cache
+
+    def get_total_value(self, portfolio_instance):
+        """Pobiera całkowitą wartość z obliczonych danych."""
+        details = self.get_portfolio_details(portfolio_instance)
+        return details.get('total_value')
+
+    def get_assets_summary(self, portfolio_instance):
+        """Pobiera podsumowanie aktywów z obliczonych danych."""
+        details = self.get_portfolio_details(portfolio_instance)
+        return details.get('assets_summary')
+    
+    def get_type_allocation(self, portfolio_instance):
+        """Pobiera dane alokacji z obliczonych detali."""
+        details = self.get_portfolio_details(portfolio_instance) 
+        return details.get('type_allocation', [])
+    
+    def get_symbol_allocation(self, portfolio_instance):
+        details = self.get_portfolio_details(portfolio_instance)
+        return details.get('symbol_allocation', [])
+
+class HistoricalValueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HistoricalPortfolioValue
+        fields = ['value', 'profit_loss', 'date']
+
+from .models import InvestorProfile
+
+class InvestorProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvestorProfile
+        fields = ['profile_type', 'updated_at']
+
+
+class JournalEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JournalEntry
+        fields = ['id', 'date', 'category', 'symbol', 'content']

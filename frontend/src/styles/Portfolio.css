@@ -1,0 +1,86 @@
+/* --- Ogólny styl tabeli --- */
+.portfolioTable {
+  width: 100%;
+  border-collapse: collapse; /* Łączy ramki, wygląda czyściej */
+  margin-top: 20px;
+}
+
+/* --- Nagłówki (elementy, które się nie powtarzają) --- */
+.portfolioTable th {
+  background-color: #f8f8f8; /* Jasnoszare tło dla nagłówków */
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+}
+
+.transaction-button {
+    background-color: #8b9ea8;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.transaction-button:hover {
+    background-color: #363e50;
+}
+
+.portfolio-details{
+    display: flex;
+    align-items: start;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.portfolio-header {
+    margin: 0;
+
+}
+
+
+.add-asset-fab {
+
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: #3a4753;
+    color: #ffffff;
+    font-size: 1.8em; /* Dopasowany plus */
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+
+    /* Centrowanie plusa wewnątrz przycisku */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+    
+    /* Pozycjonowanie w wersji Desktop (domyślne) */
+    position: static; /* Jest częścią nagłówka, nie pływa */
+    transform: none; /* Resetujemy transformacje */
+    margin: 0; /* Marginesem steruje 'gap' w kontenerze */
+}
+
+.add-asset-fab:hover {
+    background-color: #525f6c;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05); /* Tylko lekkie powiększenie */
+}
+
+/* --- WERSJA MOBILNA (Przycisk ucieka na dół ekranu) --- */
+@media (max-width: 768px) {
+    .add-asset-fab {
+        position: fixed; /* Wyjmujemy go z nagłówka */
+        bottom: 20px;
+        right: 20px;
+        width: 50px; /* Na telefonie większy, łatwiej kliknąć */
+        height: 50px;
+        z-index: 1000; /* Żeby był nad tabelą */
+        font-size: 2.2em;
+    }
+}

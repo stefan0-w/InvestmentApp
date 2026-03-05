@@ -1,75 +1,156 @@
-from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import generics, viewsets, permissions
-from .serializers import UserSerializer, TransactionSerializer
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Transaction
+from rest_framework import generics, viewsets, permissions, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Portfolio, Transaction, HistoricalPortfolioValue, InvestorProfile, JournalEntry
+from .serializers import UserSerializer, TransactionSerializer, PortfolioSerializer, HistoricalValueSerializer, InvestorProfileSerializer, JournalEntrySerializer
+
+# Importujemy logikę z warstwy serwisowej
+# (Zakładamy, że ten plik istnieje, zgodnie z naszymi ustaleniami)
+from .services.market_data_services import search_finnhub_assets, get_finnhub_quote
+from .services.csv_import_service import import_xtb_xlsx
+# --- WIDOKI ZWIĄZANE Z UŻYTKOWNIKIEM I PORTFELEM ---
 
 class CreateUserView(generics.CreateAPIView):
+    """
+    Ten widok pozostaje bez zmian. Służy do rejestracji nowych użytkowników.
+    Sygnał Django w tle automatycznie stworzy dla nich portfel.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
 
+class PortfolioDetailView(generics.RetrieveAPIView):
+    """
+    NOWY, UPROSZCZONY WIDOK. Zawsze zwraca JEDEN portfel należący do zalogowanego użytkownika.
+    Zastępuje cały skomplikowany `PortfolioViewSet`.
+    """
+    serializer_class = PortfolioSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Ta metoda jest nadpisana, aby zawsze zwracać portfel
+        # powiązany z zalogowanym użytkownikiem.
+        return self.request.user.portfolio
+
+
+# --- WIDOKI ZWIĄZANE Z TRANSAKCJAMI I AKTYWAMI ---
+
 class TransactionViewSet(viewsets.ModelViewSet):
+    """
+    ZNACZNIE UPROSZCZONY TransactionViewSet.
+    Backend sam dba o przypisanie transakcji do portfela użytkownika.
+    """
     serializer_class = TransactionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Każdy user widzi tylko swoje transakcje
-        return Transaction.objects.filter(user=self.request.user)
+        """
+
+        Zwraca transakcje tylko dla JEDYNEGO portfela należącego do użytkownika.
+        """
+        user_portfolio = self.request.user.portfolio
+        return Transaction.objects.filter(portfolio=user_portfolio)
 
     def perform_create(self, serializer):
-        # User przypisuje się automatycznie w serializerze
-        serializer.save()
-
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from django.conf import settings
-import requests
-from rest_framework import status
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def search_assets(request):
-    query = request.query_params.get("q", "")
-    if not query:
-        return Response({"error": "Missing query parameter ?q="}, status=400)
-
-    api_key = settings.FINNHUB_API_KEY
-    # tu wymuszamy tylko US
-    url = f"https://finnhub.io/api/v1/search?q={query}&exchange=US&token={api_key}"
-    response = requests.get(url)
-
-    if response.status_code != 200:
-        return Response({"error": "Finnhub API error"}, status=response.status_code)
-
-    results = response.json().get("result", [])
-
-    # zwracamy tylko symbol i description
-    return Response([
-        {"symbol": r["symbol"], "description": r["description"]}
-        for r in results if r.get("symbol")
-    ])
+        """
+        Automatycznie przypisuje tworzoną transakcję do portfela zalogowanego użytkownika.
+        Frontend nie musi już wysyłać `portfolioId`.
+        """
+        user_portfolio = self.request.user.portfolio
+        serializer.save(portfolio=user_portfolio)
 
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def quote_symbol(request):
-    symbol = request.query_params.get("symbol")
-    if not symbol:
-        return Response({"error": "Missing query parameter ?symbol="}, status=400)
+# --- WIDOKI DO KOMUNIKACJI Z ZEWNĘTRZNYM API ---
+
+class SearchAssetsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        query = request.query_params.get("q")
+        if not query:
+            return Response({"error": "Missing query parameter ?q="}, status=status.HTTP_400_BAD_REQUEST)
+        
+        results = search_finnhub_assets(query)
+        return Response(results)
+
+
+class QuoteSymbolView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        symbol = request.query_params.get("symbol")
+        if not symbol:
+            return Response({"error": "Missing query parameter ?symbol="}, status=status.HTTP_400_BAD_REQUEST)
+            
+        price = get_finnhub_quote(symbol)
+        return Response({"price": price})
     
 
-    api_key = settings.FINNHUB_API_KEY
-    # tu wymuszamy tylko US
-    url = f"https://finnhub.io/api/v1/quote?symbol={symbol}&token={api_key}"
-    response = requests.get(url)
+class PortfolioHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    if response.status_code != 200:
-        return Response({"error": "Finnhub API error"}, status=response.status_code)
+    def get(self, request, *args, **kwargs):
+        history = HistoricalPortfolioValue.objects.filter(
+            portfolio=request.user.portfolio
+        ).order_by('date')
+        
+        serializer = HistoricalValueSerializer(history, many=True) 
+        return Response(serializer.data)
+    
 
-    result = response.json().get("c")
+class ImportXTBView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    return Response(result)
+    def post(self, request):
+        file = request.FILES.get("file")
+        if not file:
+            return Response({"error": "Brak pliku"}, status=400)
+
+        try:
+            import_xtb_xlsx(file, request.user)
+            return Response({"status": "OK"})
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
+
+class InvestorProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        
+        try:
+            profile = request.user.investor_profile 
+            serializer = InvestorProfileSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        user = request.user
+        profile_type = request.data.get('profile_type')
+
+        if not profile_type:
+            return Response({'error': 'Profile type is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update or Create (używamy update_or_create aby nadpisać stary profil jeśli użytkownik robi quiz ponownie)
+        profile, created = InvestorProfile.objects.update_or_create(
+            user=user,
+            defaults={'profile_type': profile_type}
+        )
+
+        serializer = InvestorProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class JournalEntryViewSet(viewsets.ModelViewSet):
+    serializer_class = JournalEntrySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return JournalEntry.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

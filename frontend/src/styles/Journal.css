@@ -1,0 +1,159 @@
+/* Kontener główny - podział na dwie kolumny na dużym ekranie, jedna na małym */
+.journal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+@media (min-width: 768px) {
+  .journal-container {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* Sekcja kalendarza */
+.calendar-section {
+  flex: 2;
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Dostosowanie react-calendar do Twoich potrzeb */
+.react-calendar {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+}
+
+/* Kropki na kalendarzu */
+.dot-container {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.dot {
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+}
+
+.dot.BUY { background-color: #4caf50; } /* Zielony */
+.dot.SELL { background-color: #f44336; } /* Czerwony */
+.dot.NOTE { background-color: #2196f3; } /* Niebieski */
+
+/* Sekcja listy i formularza */
+.details-section {
+  flex: 1;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.entry-card {
+  background: #fff;
+  border-left: 5px solid #ccc;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.entry-card.BUY { border-left-color: #4caf50; }
+.entry-card.SELL { border-left-color: #f44336; }
+.entry-card.NOTE { border-left-color: #2196f3; }
+
+/* Prosty formularz */
+.journal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px dashed #ddd;
+}
+
+.journal-form input, 
+.journal-form select, 
+.journal-form textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.journal-form button {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* --- Nowe style dla przycisków Edycji i Usuwania --- */
+
+.entry-header {
+  display: flex;
+  justify-content: space-between; /* Rozrzuca treść na lewo, przyciski na prawo */
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.entry-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Małe przyciski na karcie wpisu */
+.btn-edit, .btn-delete {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+.btn-edit {
+  background-color: #f3c07a; /* Pomarańczowy */
+}
+
+.btn-delete {
+  background-color: #f86f6a; /* Czerwony */
+}
+
+.btn-edit:hover { background-color: #ec971f; }
+.btn-delete:hover { background-color: #c9302c; }
+
+/* Przyciski w formularzu */
+.form-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-update {
+  background-color: #f0ad4e; /* Pomarańczowy dla spójności */
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.btn-cancel {
+  background-color: #999;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

@@ -1,0 +1,28 @@
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.topbar-title h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1e293b;
+}
+
+.logout-button {
+    background-color: #8b9ea8;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+    background-color: #363e50;
+}
