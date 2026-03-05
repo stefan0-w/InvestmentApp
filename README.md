@@ -80,7 +80,7 @@ The application follows a full-stack architecture:
 
 1. Clone repository
 
-git clone https://github.com/your-repo/investment-app
+git clone https://github.com/stefan0-w/InvestmentApp.git
 
 2. Backend setup
 
