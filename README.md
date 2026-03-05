@@ -42,7 +42,6 @@ Educational materials organized by different levels of investment knowledge.
 A simple advisory tool based on a questionnaire that evaluates the user's portfolio diversification and provides recommendations.
 
 
-
 ## Tech Stack
 
 Backend:
@@ -76,3 +75,22 @@ The application follows a full-stack architecture:
 - integration with external financial API
 - caching to limit external API calls
 - portfolio value calculation logic
+
+## Setup
+
+1. Clone repository
+
+git clone https://github.com/your-repo/investment-app
+
+2. Backend setup
+
+cd backend  
+pip install -r requirements.txt  
+python manage.py migrate  
+python manage.py runserver  
+
+3. Frontend setup
+
+cd frontend  
+npm install  
+npm start
